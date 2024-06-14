@@ -1,0 +1,1 @@
+# firefox-multi-profile-launcher
