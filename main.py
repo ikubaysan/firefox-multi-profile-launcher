@@ -64,7 +64,7 @@ def run_firefox_with_cloned_profiles(cloned_profiles_dir, count, start_private):
         if i >= count:
             print(f"Stopped early after running {count} profiles.")
             break
-        command = ["firefox", "-profile", profile_path, "-no-remote"]
+        command = ["firefox", "-profile", profile_path, "-no-remote", "-allow-downgrade"]
         if start_private:
             command.append("--private-window")
         process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, preexec_fn=os.setpgrp)
