@@ -7,9 +7,25 @@ import sys
 import time
 
 
-def find_default_profile_dir(base_path):
+def find_default_profile_dir():
+
+    potential_default_paths = [
+        os.path.abspath(os.path.expanduser("~/snap/firefox/common/.mozilla/firefox")),
+        os.path.abspath(os.path.expanduser("~/.mozilla/firefox")),
+    ]
+
+    base_path = None
+    for path in potential_default_paths:
+        if os.path.exists(path):
+            base_path = path
+            break
+
+    if not base_path:
+        print(f"Default profile directory not found in: {potential_default_paths}")
+        return None
+
     for folder in os.listdir(base_path):
-        if folder.endswith('.default'):
+        if folder.endswith('.default') or folder.endswith('.default-release'):
             return os.path.join(base_path, folder)
     return None
 
@@ -96,10 +112,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if not args.template_dir:
-        default_path = os.path.expanduser("~/snap/firefox/common/.mozilla/firefox")
-        args.template_dir = find_default_profile_dir(default_path)
+        args.template_dir = find_default_profile_dir()
         if not args.template_dir:
-            print(f"No default profile directory found in {default_path}. Please specify a template directory.")
+            print(f"No default profile directory found. Please specify a template directory.")
             sys.exit(1)
         print(f"Using default profile directory: {os.path.abspath(args.template_dir)}")
 
