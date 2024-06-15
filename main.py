@@ -45,19 +45,26 @@ def clone_template_profile(template_profile_dir, cloned_profiles_dir, profile_ba
                 shutil.rmtree(profile_path)
             else:
                 print(f"Profile {profile_name} already exists. Skipping clone...")
+
+                if proxy_list:
+                    proxy = proxy_list[i]
+                    set_proxy_for_profile_prefs_js_file(prefs_path=os.path.join(profile_path, "prefs.js"),
+                                                        proxy=proxy.server,
+                                                        port=proxy.port)
                 continue
 
         command = f"cp -r {template_profile_dir} {profile_path}"
         try:
             subprocess.run(command, shell=True, check=True)
             print(f"Cloned {profile_name} successfully.")
-            if proxy_list:
-                proxy = proxy_list[i]
-                set_proxy_for_profile_prefs_js_file(prefs_path=os.path.join(profile_path, "prefs.js"),
-                                                    proxy=proxy.server,
-                                                    port=proxy.port)
         except subprocess.CalledProcessError as e:
             print(f"Failed to clone {profile_name}: {e}")
+
+        if proxy_list:
+            proxy = proxy_list[i]
+            set_proxy_for_profile_prefs_js_file(prefs_path=os.path.join(profile_path, "prefs.js"),
+                                                proxy=proxy.server,
+                                                port=proxy.port)
 
 
 def set_proxy_for_profile_prefs_js_file(prefs_path: str, proxy: str, port: int) -> None:
