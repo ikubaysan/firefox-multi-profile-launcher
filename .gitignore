@@ -2,3 +2,4 @@ venv/
 .idea/
 cloned_profiles/
 *.pyc
+ignore/
