@@ -39,12 +39,15 @@ def clone_template_profile(template_profile_dir, cloned_profiles_dir, profile_ba
             print(f"Failed to clone {profile_name}: {e}")
 
 
-def run_firefox_with_cloned_profiles(cloned_profiles_dir, start_private):
+def run_firefox_with_cloned_profiles(cloned_profiles_dir, count, start_private):
     profile_paths = [os.path.abspath(os.path.join(cloned_profiles_dir, profile)) for profile in
                      os.listdir(cloned_profiles_dir)]
     print(f"Found {len(profile_paths)} profiles to run.")
     processes = []
-    for profile_path in profile_paths:
+    for i, profile_path in enumerate(profile_paths):
+        if i >= count:
+            print(f"Stopped early after running {count} profiles.")
+            break
         command = ["firefox", "-profile", profile_path, "-no-remote"]
         if start_private:
             command.append("--private-window")
@@ -57,7 +60,7 @@ def run_firefox_with_cloned_profiles(cloned_profiles_dir, start_private):
 def main(keep_script_running: bool, clone_count: int, force: bool, template_profile_dir, cloned_profiles_dir,
          profile_base_name, start_private):
     clone_template_profile(template_profile_dir, cloned_profiles_dir, profile_base_name, count=clone_count, force=force)
-    processes = run_firefox_with_cloned_profiles(cloned_profiles_dir, start_private)
+    processes = run_firefox_with_cloned_profiles(cloned_profiles_dir, clone_count, start_private)
 
     if keep_script_running:
         try:
@@ -86,7 +89,7 @@ if __name__ == "__main__":
                         help="Base name for cloned profiles.")
     parser.add_argument("--keep-running", action="store_true",
                         help="Keep the script running while Firefox processes are active.")
-    parser.add_argument("--count", type=int, default=2, help="Number of profiles to clone.")
+    parser.add_argument("--count", type=int, default=2, help="Number of profiles to clone and run.")
     parser.add_argument("--force", action="store_true", help="Force the cloning of profiles, even if they exist.")
     parser.add_argument("--start-private", action="store_true", help="Launch Firefox in private browsing mode.")
 
